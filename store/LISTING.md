@@ -51,8 +51,8 @@ Open source under the MIT license.
 - Screenshots (1280×800): `screenshot-1-home.png`, `screenshot-2-launch.png`, `screenshot-3-commands.png`, `screenshot-4-edit.png`
 - Small promo tile (440×280): `promo-small-440x280.png`
 
-**Homepage URL:** the GitHub repo URL
-**Support URL:** the GitHub repo's Issues page, or https://forgestackpartners.com
+**Homepage URL:** https://github.com/brette912/forge-tab
+**Support URL:** https://github.com/brette912/forge-tab/issues
 
 ## Privacy practices tab
 
@@ -70,4 +70,4 @@ Forge Tab replaces Chrome's new tab page with a customizable home screen of grou
 
 **Data usage:** Check none of the data types. Then tick all three certifications (not sold, not used for unrelated purposes, not used for creditworthiness).
 
-**Privacy policy URL:** link to `PRIVACY.md` on GitHub, or a copy at https://forgestackpartners.com/forge-tab/privacy
+**Privacy policy URL:** https://github.com/brette912/forge-tab/blob/main/PRIVACY.md
