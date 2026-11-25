@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>New tab</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="top">
+      <div class="time-block">
+        <time id="clock" class="clock" aria-live="off"></time>
+        <p id="date" class="date"></p>
+      </div>
+      <div class="top-right">
+        <ul id="checks" class="checks" aria-label="Server and site status"></ul>
+        <div class="tools">
+          <button id="notesBtn" class="tool" type="button">Notes</button>
+          <button id="commandsBtn" class="tool" type="button">Commands</button>
+          <button id="editBtn" class="tool" type="button" aria-pressed="false">Edit</button>
+          <button id="settingsBtn" class="tool" type="button">Settings</button>
+        </div>
+      </div>
+    </header>
+
+    <div class="launcher" role="combobox" aria-expanded="false" aria-haspopup="listbox" aria-owns="results">
+      <svg class="launcher-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg>
+      <input id="q" type="text" autocomplete="off" spellcheck="false"
+             placeholder="Type to open a shortcut or search the web"
+             aria-label="Open a shortcut or search the web" aria-autocomplete="list" aria-controls="results">
+      <ul id="results" class="results" role="listbox" hidden></ul>
+    </div>
+
+    <section id="groups" class="groups" aria-label="Shortcuts"></section>
+    <p class="edit-hint" id="editHint" hidden>Drag shortcuts to reorder or move them between groups. Click one to change it.</p>
+  </main>
+
+  <!-- Shortcut editor -->
+  <dialog id="editor" class="sheet">
+    <form method="dialog" id="editorForm">
+      <h2 id="editorTitle">Edit shortcut</h2>
+      <div class="editor-row">
+        <div id="iconPreview" class="tile-icon big"></div>
+        <div class="fields">
+          <label>Name<input name="name" required maxlength="40"></label>
+          <label>Address<input name="url" required placeholder="example.com or http://192.168.1.10:8080"></label>
+        </div>
+      </div>
+      <label>Group<select name="group"></select></label>
+      <fieldset class="icon-choice">
+        <legend>Icon</legend>
+        <label><input type="radio" name="iconType" value="auto"> Site icon</label>
+        <label><input type="radio" name="iconType" value="letter"> Letter</label>
+        <label><input type="radio" name="iconType" value="emoji"> Emoji</label>
+        <label><input type="radio" name="iconType" value="image"> Image</label>
+      </fieldset>
+      <label class="emoji-field" hidden>Emoji<input name="emoji" maxlength="8" placeholder="🛠️"></label>
+      <div class="image-field" hidden>
+        <label for="logoSite">Get the logo from a website</label>
+        <div class="inline-row">
+          <input id="logoSite" name="logoSite" placeholder="claude.ai" autocomplete="off" spellcheck="false">
+          <button type="button" id="getLogo">Get logo</button>
+        </div>
+        <label class="file-label">Or choose an image file<input name="image" type="file" accept="image/*"></label>
+      </div>
+      <div class="sheet-actions">
+        <button type="button" class="danger" id="deleteTile">Delete shortcut</button>
+        <span class="spacer"></span>
+        <button value="cancel" formnovalidate>Cancel</button>
+        <button value="save" class="primary" id="saveTile">Save</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Settings -->
+  <dialog id="settings" class="sheet wide">
+    <form method="dialog" id="settingsForm">
+      <h2>Settings</h2>
+      <h3>Shortcuts</h3>
+      <label class="switch-row" for="newTabToggle">
+        <input type="checkbox" id="newTabToggle" role="switch">
+        <span class="switch" aria-hidden="true"></span>
+        <span class="switch-text">
+          <strong>Open shortcuts in a new tab</strong>
+          <span>Keeps this dashboard open in its own tab. App shortcuts still just open the app.</span>
+        </span>
+      </label>
+
+      <h3>Status checks</h3>
+      <p class="help">Shown next to the clock and refreshed every minute. Use Website for any site or local service. Use Ollama for an Ollama server address to see its models.</p>
+      <div id="checkRows" class="check-rows"></div>
+      <button type="button" id="addCheck" class="ghost-btn">Add status check</button>
+
+      <h3>Backup</h3>
+      <p class="help">Export saves every group, shortcut and check to a file. Import replaces the current layout with one from a file.</p>
+      <div class="row-btns">
+        <button type="button" id="exportBtn">Export layout</button>
+        <label class="file-btn">Import layout<input type="file" id="importFile" accept="application/json"></label>
+        <button type="button" id="resetBtn" class="danger">Reset to starting layout</button>
+      </div>
+      <div class="sheet-actions">
+        <span class="spacer"></span>
+        <button value="cancel" formnovalidate>Cancel</button>
+        <button value="save" class="primary" id="saveSettings">Save settings</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Notes -->
+  <dialog id="notes" class="sheet drawer" aria-labelledby="notesTitle">
+    <div class="drawer-view" id="noteList">
+      <div class="drawer-head">
+        <h2 id="notesTitle">Notes</h2>
+        <button type="button" class="tool" id="closeNotes">Close</button>
+      </div>
+      <button type="button" id="newNote" class="primary new-note">New note</button>
+      <input id="noteFilter" type="search" placeholder="Find in notes" aria-label="Find in notes" autocomplete="off">
+      <div class="note-chips" id="noteChips" aria-label="Show notes by color" hidden></div>
+      <div id="noteItems" class="note-items"></div>
+    </div>
+    <div class="drawer-view note-edit" id="noteEdit" hidden>
+      <div class="drawer-head">
+        <button type="button" class="tool" id="noteBack">All notes</button>
+        <span class="note-saved" id="noteSaved" aria-live="polite"></span>
+      </div>
+      <div class="note-tools">
+        <button type="button" class="pin-btn" id="pinNote" aria-pressed="false">Pin to top</button>
+        <div class="note-colors" id="noteColors" role="radiogroup" aria-label="Note color"></div>
+      </div>
+      <textarea id="noteText" aria-label="Note" placeholder="Start typing. Your note saves as you go."></textarea>
+      <div class="sheet-actions">
+        <button type="button" class="danger" id="deleteNote">Delete note</button>
+        <span class="spacer"></span>
+        <button type="button" id="copyNote">Copy text</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Commands -->
+  <dialog id="commands" class="sheet drawer" aria-labelledby="cmdTitle">
+    <div class="drawer-view" id="cmdList">
+      <div class="drawer-head">
+        <h2 id="cmdTitle">Commands</h2>
+        <button type="button" class="tool" id="closeCmds">Close</button>
+      </div>
+      <p class="help">Click a command to copy it, then paste it where the heading says to run it.</p>
+      <input id="cmdFilter" type="search" placeholder="Find a command" aria-label="Find a command" autocomplete="off">
+      <div id="cmdGroups" class="cmd-groups"></div>
+      <button type="button" id="addCmd" class="ghost-btn">Add command</button>
+    </div>
+    <form class="drawer-view" id="cmdForm" hidden>
+      <div class="drawer-head">
+        <h2 id="cmdFormTitle">Add command</h2>
+      </div>
+      <label>Name<input name="name" required maxlength="60" placeholder="Update my project"></label>
+      <label>Command<textarea name="cmd" required rows="4" spellcheck="false" placeholder="git pull"></textarea></label>
+      <p class="help">Put a word in single braces, like {container}, and you'll be asked to fill it in when you copy the command.</p>
+      <label>Where it runs
+        <select name="where">
+          <option value="windows">In Windows PowerShell</option>
+          <option value="server">In a Linux or Mac terminal</option>
+          <option value="any">Anywhere</option>
+        </select>
+      </label>
+      <div class="sheet-actions">
+        <button type="button" class="danger" id="deleteCmd">Delete command</button>
+        <span class="spacer"></span>
+        <button type="button" id="cancelCmd">Cancel</button>
+        <button type="submit" class="primary">Save command</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="defaults.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
