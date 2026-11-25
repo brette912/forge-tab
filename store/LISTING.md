@@ -50,6 +50,7 @@ Open source under the MIT license.
 - Store icon: `store-icon-128.png` (96×96 artwork with 16px padding, as the store asks)
 - Screenshots (1280×800): `screenshot-1-home.png`, `screenshot-2-launch.png`, `screenshot-3-commands.png`, `screenshot-4-edit.png`
 - Small promo tile (440×280): `promo-small-440x280.png`
+- Marquee promo tile (1400×560): `promo-marquee-1400x560.png`
 
 **Homepage URL:** https://github.com/brette912/forge-tab
 **Support URL:** https://github.com/brette912/forge-tab/issues
